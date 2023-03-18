@@ -17,3 +17,14 @@ chrome.tabs.removeCSS(
     1076381467,
     { allFrames: true, file: 'videofixed.css' }
 )
+chrome.windows.getAll(
+    function (ws) {
+        console.log(ws)
+    }
+  )
+
+  chrome.windows.update(
+    1076383559,
+    {drawAttention: true}
+  )
+  

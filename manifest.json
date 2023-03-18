@@ -13,6 +13,20 @@
         "<all_urls>",
         "contextMenus"
     ],
+    "commands": {
+        "splitWindows": {
+            "suggested_key": {
+                "default": "Alt+S"
+            },
+            "description": "splitWindows"
+        },
+        "toOneWindow": {
+            "suggested_key": {
+                "default": "Alt+A"
+            },
+            "description": "toOneWindow"
+        }
+    },
     "background": {
         "scripts": [
             "background.js"
