@@ -25,17 +25,32 @@ function splitWindows() {
                                 width: splitW,
                                 height: splitH,
                                 tabId: t0.id
+                            }, function (createdW) {
+                                chrome.tabs.removeCSS(
+                                    t0.id,
+                                    { allFrames: true, file: 'videofixed.css' },
+                                    function () {
+                                        chrome.tabs.insertCSS(
+                                            t0.id,
+                                            { allFrames: true, file: 'videofixed.css' },
+                                            function () {
+                                                if (notChromeTabs.length === 0) {
+                                                    chrome.contextMenus.update(
+                                                        "windowsSpliter",
+                                                        { title: '11' },
+                                                        function () {
+                                                            toSplit = false
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        )
+                                    }
+                                )
                             }
                         )
                 }
             }
-            chrome.contextMenus.update(
-                "windowsSpliter",
-                { title: '11' },
-                function () {
-                    toSplit = false
-                }
-            )
         }
     )
 }
@@ -51,25 +66,75 @@ chrome.contextMenus.create({
             splitWindows()
         } else {
             chrome.tabs.query(
-                { pinned: false },
+                { pinned: false, url: ['https://*/*', 'http://*/*', 'file:///*'] },
                 function (ts) {
-                    chrome.windows.create({ state: 'maximized', tabId: ts.shift().id }, function (createdW) {
-                        chrome.tabs.move(
-                            ts.map((tt) => tt.id),
-                            { windowId: createdW.id, index: -1 },
-                            function () {
-                                chrome.contextMenus.update(
-                                    "windowsSpliter",
-                                    { title: '99' },
-                                    function () {
-                                        toSplit = true
-                                        chrome.tabs.update(onClickTab.id, { active: true })
+                    if (ts.length > 0) {
+                        let id0 = ts.shift().id
+                        chrome.windows.create({ state: 'maximized', tabId: id0 }, function (createdW) {
+                            chrome.tabs.removeCSS(
+                                id0,
+                                { allFrames: true, file: 'videofixed.css' },
+                                function () {
+                                    if (ts.length > 0)
+                                        chrome.tabs.move(
+                                            ts.map((tt) => tt.id),
+                                            { windowId: createdW.id, index: -1 },
+                                            function (movedTabs) {
+                                                for (let mT of movedTabs) {
+                                                    chrome.tabs.removeCSS(
+                                                        mT.id,
+                                                        { allFrames: true, file: 'videofixed.css' },
+                                                        function () {
+                                                            if (mT === movedTabs[movedTabs.length - 1]) {
+                                                                chrome.contextMenus.update(
+                                                                    "windowsSpliter",
+                                                                    { title: '99' },
+                                                                    function () {
+                                                                        toSplit = true
+                                                                        chrome.tabs.update(onClickTab.id, { active: true })
+                                                                    }
+                                                                )
+                                                            }
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        )
+                                    else if (ts.length === 0) {
+                                        chrome.contextMenus.update(
+                                            "windowsSpliter",
+                                            { title: '99' },
+                                            function () {
+                                                toSplit = true
+                                                chrome.tabs.update(onClickTab.id, { active: true })
+                                            }
+                                        )
                                     }
-                                )
-                            }
+                                }
+                            )
+                        }
                         )
                     }
-                    )
+                    // else if (ts.length === 1) {
+                    //     chrome.windows.create({ state: 'maximized', tabId: ts[0].id }, function (createdW) {
+                    //         chrome.tabs.removeCSS(
+                    //             ts[0].id,
+                    //             { allFrames: true, file: 'videofixed.css' },
+                    //             function () {
+                    //                 chrome.contextMenus.update(
+                    //                     "windowsSpliter",
+                    //                     { title: '99' },
+                    //                     function () {
+                    //                         toSplit = true
+                    //                         chrome.tabs.update(onClickTab.id, { active: true })
+                    //                     }
+                    //                 )
+                    //             }
+                    //         )
+                    //     }
+                    //     )
+
+                    // }
                 }
             )
         }
