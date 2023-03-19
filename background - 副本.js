@@ -12,28 +12,20 @@ function splitWindows() {
             let splitNumber = Math.ceil(Math.sqrt(notChromeTabs.length))
             let splitH = Math.ceil(top.screen.height / splitNumber) + 41
             let splitW = Math.ceil(top.screen.width / splitNumber) + 16
-            function createNextWindow(createdW) {
-                if (createdW) {
+            // let screenH = top.screen.height + 41 * splitNumber
+            let screenW = top.screen.width + 16 * splitNumber
+            for (let jj = top.screen.height - splitH; splitH + jj >= 0; jj = jj - splitH + 41) {
+                for (let ii = 0; screenW - ii >= splitW; ii = ii + splitW - 16) {
                     let t0 = notChromeTabs.shift()
-                    if (t0) {
-                        let tp
-                        let lef
-                        if (top.screen.width - (createdW.left + createdW.width) > (createdW.width - 16) * 0.8) {
-                            tp = createdW.top
-                            lef = createdW.left + createdW.width - 16
-
-                        } else {
-                            tp = createdW.top - splitH + 41
-                            lef = 0
-                        }
+                    if (t0)
                         chrome.windows.create(
                             {
                                 type: "popup",
                                 // state:"fullscreen",
-                                top: tp,
-                                left: lef,
-                                width: createdW.width,
-                                height: createdW.height,
+                                top: jj,
+                                left: ii,
+                                width: splitW,
+                                height: splitH,
                                 tabId: t0.id
                             }, function (createdW) {
                                 chrome.tabs.removeCSS(
@@ -53,95 +45,14 @@ function splitWindows() {
                                                         }
                                                     )
                                                 }
-                                                else if (notChromeTabs.length > 0) createNextWindow(createdW)
                                             }
                                         )
                                     }
                                 )
                             }
                         )
-                    }
-
                 }
             }
-            let t0 = notChromeTabs.shift()
-            if (t0) {
-                chrome.windows.create(
-                    {
-                        type: "popup",
-                        // state:"fullscreen",
-                        top: top.screen.height - splitH,
-                        left: 0,
-                        width: splitW,
-                        height: splitH,
-                        tabId: t0.id
-                    }, function (createdW) {
-                        chrome.tabs.removeCSS(
-                            t0.id,
-                            { allFrames: true, file: 'videofixed.css' },
-                            function () {
-                                chrome.tabs.insertCSS(
-                                    t0.id,
-                                    { allFrames: true, file: 'videofixed.css' },
-                                    function () {
-                                        if (notChromeTabs.length === 0) {
-                                            chrome.contextMenus.update(
-                                                "ctxm",
-                                                { title: '1' },
-                                                function () {
-                                                    toSplit = false
-                                                }
-                                            )
-                                        }
-                                        else if (notChromeTabs.length > 0) createNextWindow(createdW)
-                                    }
-                                )
-                            }
-                        )
-                    }
-                )
-            }
-            // // let screenH = top.screen.height + 41 * splitNumber
-            // let screenW = top.screen.width + 16 * splitNumber
-            // for (let jj = top.screen.height - splitH; splitH + jj >= 0; jj = jj - splitH + 41) {
-            //     for (let ii = 0; screenW - ii >= splitW; ii = ii + splitW - 16) {
-            //         let t0 = notChromeTabs.shift()
-            //         if (t0)
-            //             chrome.windows.create(
-            //                 {
-            //                     type: "popup",
-            //                     // state:"fullscreen",
-            //                     top: jj,
-            //                     left: ii,
-            //                     width: splitW,
-            //                     height: splitH,
-            //                     tabId: t0.id
-            //                 }, function (createdW) {
-            //                     chrome.tabs.removeCSS(
-            //                         t0.id,
-            //                         { allFrames: true, file: 'videofixed.css' },
-            //                         function () {
-            //                             chrome.tabs.insertCSS(
-            //                                 t0.id,
-            //                                 { allFrames: true, file: 'videofixed.css' },
-            //                                 function () {
-            //                                     if (notChromeTabs.length === 0) {
-            //                                         chrome.contextMenus.update(
-            //                                             "ctxm",
-            //                                             { title: '1' },
-            //                                             function () {
-            //                                                 toSplit = false
-            //                                             }
-            //                                         )
-            //                                     }
-            //                                 }
-            //                             )
-            //                         }
-            //                     )
-            //                 }
-            //             )
-            //     }
-            // }
         }
     )
 }
