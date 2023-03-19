@@ -10,10 +10,12 @@ function splitWindows() {
                 }
             }
             let splitNumber = Math.ceil(Math.sqrt(notChromeTabs.length))
-            let splitH = Math.floor(top.screen.height / splitNumber)
-            let splitW = Math.floor(top.screen.width / splitNumber)
-            for (let jj = 0; top.screen.height - jj >= splitH; jj = jj + splitH) {
-                for (let ii = 0; top.screen.width - ii >= splitW; ii = ii + splitW) {
+            let splitH = Math.ceil(top.screen.height / splitNumber) + 16
+            let splitW = Math.ceil(top.screen.width / splitNumber) + 16
+            let screenH = top.screen.height + 16 * splitNumber
+            let screenW = top.screen.width + 16 * splitNumber
+            for (let jj = 0; screenH - jj >= splitH; jj = jj + splitH - 16) {
+                for (let ii = 0; screenW - ii >= splitW; ii = ii + splitW - 16) {
                     let t0 = notChromeTabs.shift()
                     if (t0)
                         chrome.windows.create(
