@@ -15,6 +15,9 @@ function splitWindows() {
             // let screenH = top.screen.height + 41 * splitNumber
             let screenW = top.screen.width + 16 * splitNumber
             for (let jj = top.screen.height - splitH; splitH + jj >= 0; jj = jj - splitH + 41) {
+                if (jj < 0) {
+                    splitH = splitH + jj
+                }
                 for (let ii = 0; screenW - ii >= splitW; ii = ii + splitW - 16) {
                     let t0 = notChromeTabs.shift()
                     if (t0)
